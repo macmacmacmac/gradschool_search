@@ -1,0 +1,47 @@
+name: Daily Mech Interp Drip
+
+on:
+  schedule:
+    - cron: '0 12 * * *' # Run at 12:00 UTC daily
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  send-drip:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Download Database Artifact
+      uses: dawidd6/action-download-artifact@v2
+      with:
+        workflow: weekly_miner.yml
+        name: papers-db
+        path: .
+      continue-on-error: true # Might fail on first run before weekly miner has run
+
+    - name: Run Daily Drip
+      env:
+        EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+        EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+      run: |
+        python src/daily_drip.py
+
+    - name: Upload updated DB
+      uses: actions/upload-artifact@v4
+      with:
+        name: papers-db
+        path: papers.db
+        overwrite: true
