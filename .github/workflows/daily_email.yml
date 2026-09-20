@@ -8,10 +8,14 @@ on:
 jobs:
   send-drip:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # Needed to commit changes back
     
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
+      with:
+        fetch-depth: 1 # We just need the latest commit
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -23,14 +27,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Download Database Artifact
-      uses: dawidd6/action-download-artifact@v2
-      with:
-        workflow: weekly_miner.yml
-        name: papers-db
-        path: .
-      continue-on-error: true # Might fail on first run before weekly miner has run
-
     - name: Run Daily Drip
       env:
         EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
@@ -39,9 +35,11 @@ jobs:
       run: |
         python src/daily_drip.py
 
-    - name: Upload updated DB
-      uses: actions/upload-artifact@v4
-      with:
-        name: papers-db
-        path: papers.db
-        overwrite: true
+    - name: Commit database changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add papers.db
+        # Only commit if there are changes
+        git diff --quiet && git diff --staged --quiet || git commit -m "Update papers database (daily drip)"
+        git push

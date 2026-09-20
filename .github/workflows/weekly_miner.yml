@@ -8,6 +8,8 @@ on:
 jobs:
   build-db:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     
     steps:
     - name: Checkout repository
@@ -23,21 +25,14 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-    - name: Download existing Database Artifact
-      uses: dawidd6/action-download-artifact@v2
-      with:
-        workflow: weekly_miner.yml
-        name: papers-db
-        path: .
-      continue-on-error: true
-
     - name: Run Database Builder
       run: |
         python src/build_database.py
 
-    - name: Upload updated DB
-      uses: actions/upload-artifact@v4
-      with:
-        name: papers-db
-        path: papers.db
-        overwrite: true
+    - name: Commit database changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add papers.db
+        git diff --quiet && git diff --staged --quiet || git commit -m "Update papers database (weekly mine)"
+        git push

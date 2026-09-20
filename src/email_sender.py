@@ -81,8 +81,11 @@ def send_daily_email(items):
     template = Template(HTML_TEMPLATE)
     html_content = template.render(items=items)
     
+    import datetime
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    
     msg = MIMEMultipart('alternative')
-    msg['Subject'] = f"Daily Mech Interp Drip - {len(items)} Papers"
+    msg['Subject'] = f"Daily Mech Interp Drip - {len(items)} Papers ({timestamp})"
     msg['From'] = EMAIL_SENDER
     msg['To'] = EMAIL_RECIPIENT
     
