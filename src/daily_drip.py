@@ -46,9 +46,15 @@ def main():
     # Select 3 unseen papers that have AT LEAST ONE European PI
     # To do this, we'll fetch a batch of unsent papers and evaluate them
     # until we find 3 good ones.
-    
-    c.execute('SELECT * FROM papers WHERE sent = 0 ORDER BY RANDOM() LIMIT 50')
-    unsent_papers = c.fetchall()
+    try:
+        c.execute('SELECT * FROM papers WHERE sent = 0 ORDER BY RANDOM() LIMIT 50')
+        unsent_papers = c.fetchall()
+    except sqlite3.OperationalError as e:
+        if "no such table: papers" in str(e):
+            logging.error("Database not initialized. Please run the Weekly Miner first to populate papers.db.")
+            conn.close()
+            return
+        raise
     
     selected_items = []
     
