@@ -2,7 +2,7 @@ import sqlite3
 import requests
 import time
 import logging
-from config import KEYWORDS, EUROPEAN_COUNTRY_CODES, DB_PATH
+from config import KEYWORDS, TARGET_COUNTRY_CODES, DB_PATH
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
@@ -58,6 +58,7 @@ def fetch_works_for_keyword(keyword):
     # Search title, abstract, and full text for the exact phrase
     params = {
         "search": f'"{keyword}"',
+        "filter": "concepts.id:C41008148",
         "per-page": 100,
         "cursor": "*"
     }
@@ -97,22 +98,21 @@ def process_works(works, conn):
             
         authorships = work.get("authorships", [])
         
-        # Check if ANY author is in Europe
-        is_european = False
-        european_authors = []
+        # Check if ANY author is in Target Countries
+        is_target = False
         
         for authorship in authorships:
             institutions = authorship.get("institutions", [])
             for inst in institutions:
                 country_code = inst.get("country_code")
-                if country_code and country_code.upper() in EUROPEAN_COUNTRY_CODES:
-                    is_european = True
+                if country_code and country_code.upper() in TARGET_COUNTRY_CODES:
+                    is_target = True
                     break
         
-        if not is_european:
+        if not is_target:
             continue
             
-        # It's a European paper! Let's save it.
+        # It's a Target paper! Let's save it.
         title = work.get("title", "Untitled")
         abstract = reconstruct_abstract(work.get("abstract_inverted_index"))
         doi = work.get("doi", "")
@@ -173,7 +173,7 @@ def main():
         added = process_works(works, conn)
         total_added += added
         
-    logging.info(f"Database build complete. Added {total_added} new European papers.")
+    logging.info(f"Database build complete. Added {total_added} new Target region papers.")
     conn.close()
 
 if __name__ == "__main__":

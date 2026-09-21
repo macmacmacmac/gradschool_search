@@ -1,6 +1,6 @@
 import sqlite3
 import logging
-from config import DB_PATH, EUROPEAN_COUNTRY_CODES
+from config import DB_PATH, TARGET_COUNTRY_CODES
 from email_sender import send_daily_email
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -12,7 +12,7 @@ def get_db_connection():
 
 def get_candidate_pis_for_paper(conn, paper_id):
     c = conn.cursor()
-    # Find all authors for this paper who are European
+    # Find all authors for this paper who are in Target Countries
     c.execute('''
         SELECT a.openalex_id, a.display_name, a.last_known_institution, a.country_code, pa.author_position
         FROM authors a
@@ -23,7 +23,7 @@ def get_candidate_pis_for_paper(conn, paper_id):
     
     pis = []
     for a in authors:
-        if a['country_code'] and a['country_code'].upper() in EUROPEAN_COUNTRY_CODES:
+        if a['country_code'] and a['country_code'].upper() in TARGET_COUNTRY_CODES:
             # Check how many papers this author has in our DB
             c.execute('SELECT COUNT(*) FROM paper_authors WHERE author_id = ?', (a['openalex_id'],))
             count = c.fetchone()[0]
@@ -43,7 +43,7 @@ def main():
     conn = get_db_connection()
     c = conn.cursor()
     
-    # Select 3 unseen papers that have AT LEAST ONE European PI
+    # Select 3 unseen papers that have AT LEAST ONE Target PI
     # To do this, we'll fetch a batch of unsent papers and evaluate them
     # until we find 3 good ones.
     try:

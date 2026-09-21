@@ -1,14 +1,16 @@
 import os
 
-# European Country Codes (ISO 3166-1 alpha-2)
-# Includes EU, UK, Switzerland, Norway, etc.
-EUROPEAN_COUNTRY_CODES = {
+# Target Country Codes (ISO 3166-1 alpha-2)
+# Includes EU, UK, Switzerland, Norway, US, CA, etc.
+TARGET_COUNTRY_CODES = {
     'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 
     'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 
     'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', # EU27
     'GB', # UK
     'CH', # Switzerland
     'NO', # Norway
+    'US', # United States
+    'CA', # Canada
 }
 
 KEYWORDS = [

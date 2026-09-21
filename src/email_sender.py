@@ -26,7 +26,7 @@ HTML_TEMPLATE = """
 </head>
 <body>
     <h1>Daily Mech Interp Drip 💧</h1>
-    <p>Here are your curated papers for today, focusing on European faculty.</p>
+    <p>Here are your curated papers for today, focusing on target faculty in Europe & NA.</p>
     
     {% for item in items %}
     <div class="paper">
@@ -34,7 +34,7 @@ HTML_TEMPLATE = """
         <div class="meta">Published: {{ item.paper.publication_year }}</div>
         
         <div class="pi-box">
-            <strong>Prospective European PIs (Faculty/Senior):</strong>
+            <strong>Prospective PIs (Faculty/Senior):</strong>
             <ul>
             {% for pi in item.pis %}
                 <li>
