@@ -13,16 +13,18 @@ TARGET_COUNTRY_CODES = {
     'CA', # Canada
 }
 
+CONTEXT = 'AND ("language model" OR "language models" OR "transformer" OR "transformers" OR "neural network" OR "neural networks" OR "LLM")'
+
 KEYWORDS = [
-    "mechanistic interpretability",
-    "sparse autoencoder",
-    "sparse autoencoders",
-    "circuit discovery",
-    "activation steering",
-    "contrastive activation addition",
-    "representation engineering",
-    "induction heads",
-    "superposition"
+    '"mechanistic interpretability"',
+    f'"sparse autoencoder" {CONTEXT}',
+    f'"sparse autoencoders" {CONTEXT}',
+    f'"circuit discovery" {CONTEXT}',
+    f'"activation steering" {CONTEXT}',
+    '"contrastive activation addition"',
+    f'"representation engineering" {CONTEXT}',
+    f'"induction heads" {CONTEXT}',
+    f'"superposition" {CONTEXT}'
 ]
 
 DB_PATH = os.environ.get("DB_PATH", os.path.join(os.path.dirname(os.path.dirname(__file__)), "papers.db"))

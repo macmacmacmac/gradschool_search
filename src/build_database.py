@@ -57,7 +57,7 @@ def fetch_works_for_keyword(keyword):
     base_url = "https://api.openalex.org/works"
     # Search title, abstract, and full text for the exact phrase
     params = {
-        "search": f'"{keyword}"',
+        "search": keyword,
         "filter": "concepts.id:C41008148",
         "per-page": 100,
         "cursor": "*"
